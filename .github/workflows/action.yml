@@ -19,11 +19,11 @@ jobs:
       - name: Fetch commits from GitHub activity
         id: fetch_activity
         env:
-          GITHUB_TOKEN: ${{ secrets.SENIOR_TOKEN }}
+          SENIOR_TOKEN: ${{ secrets.SENIOR_TOKEN }}
         run: |
           # Get the authenticated user's username
           echo "Authenticating"
-          gh auth login --with-token <<< "$GITHUB_TOKEN"
+          gh auth login --with-token <<< "$SENIOR_TOKEN"
           USERNAME=$(gh api user --jq .login)
           echo "Authenticated as $USERNAME"
 
