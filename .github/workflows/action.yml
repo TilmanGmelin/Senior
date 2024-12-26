@@ -1,0 +1,48 @@
+name: Update daily
+
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+jobs:
+  alter_repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract target number of commits from seed.txt
+        id: extract_seed
+        run: |
+          NUMBER=$(grep $(date +%F) seed.txt | cut -d' ' -f2)
+          echo "TARGET_COMMITS=$NUMBER" >> $GITHUB_ENV
+
+      - name: Fetch commits from GitHub activity
+        id: fetch_activity
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the authenticated user's username
+          USERNAME=$(gh api user --jq .login)
+
+          # Fetch events for the authenticated user and filter for today's commits
+          TODAY=$(date +%Y-%m-%d)
+          COMMIT_COUNT=$(gh api "/users/$USERNAME/events" --jq '
+            map(select(.type == "PushEvent" and .created_at | startswith(env.TODAY)))
+            | map(.payload.commits) | flatten | length
+          ')
+
+          echo "COMMIT_COUNT=$COMMIT_COUNT" >> $GITHUB_ENV
+          
+      - name: Create missing commits
+        id: create_missing
+        env:
+          TARGET_COMMITS: ${{ env.TARGET_COMMITS }}
+          COMMIT_COUNT: ${{ env.COMMIT_COUNT }}
+        run: |
+          for ((i = $COMMIT_COUNT; i < $TARGET_COMMITS; i++)); do
+            random_string=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 5)
+            new_line="[${random_string}] All work and no play make jack a dull boy!"
+            echo "$new_line" >> book.txt
+            git add book.txt && git commit -m "$new_line"
+          done
+          git push
