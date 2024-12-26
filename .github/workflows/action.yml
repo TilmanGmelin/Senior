@@ -22,9 +22,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.SENIOR_TOKEN }}
         run: |
           # Get the authenticated user's username
+          echo "Authenticating"
           gh auth login --with-token <<< "$GITHUB_TOKEN"
           USERNAME=$(gh api user --jq .login)
-          echo "authenticated"
+          echo "Authenticated as $USERNAME"
 
           # Fetch events for the authenticated user and filter for today's commits
           TODAY=$(date +%Y-%m-%d)
