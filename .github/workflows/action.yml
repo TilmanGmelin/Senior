@@ -46,6 +46,7 @@ jobs:
         env:
           TARGET_COMMITS: ${{ env.TARGET_COMMITS }}
           COMMIT_COUNT: ${{ env.COMMIT_COUNT }}
+          SENIOR_TOKEN: ${{ secrets.SENIOR_TOKEN }}
         run: |
           for ((i = $COMMIT_COUNT; i < $TARGET_COMMITS; i++)); do
             random_string=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 5)
@@ -53,4 +54,4 @@ jobs:
             echo "$new_line" >> book.txt
             git add book.txt && git commit -m "$new_line"
           done
-          git push
+          git push https://x-access-token:$SENIOR_TOKEN@github.com/${{ github.repository }}.git
