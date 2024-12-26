@@ -19,9 +19,10 @@ jobs:
       - name: Fetch commits from GitHub activity
         id: fetch_activity
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.SENIOR_TOKEN }}
         run: |
           # Get the authenticated user's username
+          gh auth login --with-token <<< "$GITHUB_TOKEN"
           USERNAME=$(gh api user --jq .login)
 
           # Fetch events for the authenticated user and filter for today's commits
