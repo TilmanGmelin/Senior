@@ -27,6 +27,7 @@ jobs:
           USERNAME=$(gh api user --jq .login)
           echo "Authenticated as $USERNAME"
 
+          gh api "/users/$USERNAME/events" --jq "."
           TODAY=$(date +%Y-%m-%d)
           COMMIT_COUNT=$(gh api "/users/$USERNAME/events" --jq "
             map(select(.type == \"PushEvent\" and .created_at | .[:10] == \"$TODAY\")) 
