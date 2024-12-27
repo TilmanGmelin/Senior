@@ -2,7 +2,7 @@ name: Update daily
 
 on:
   schedule:
-    - cron: "0 23 * * *"
+    - cron: "0 17 * * *"
   workflow_dispatch:
 jobs:
   alter_repo:
@@ -14,7 +14,7 @@ jobs:
       
       - name: Set up Git configuration
         run: |
-          git config --global user.email "tilmangmelin@gmx.de"
+          git config --global user.email "tilmangmelin@gmx.de" #yes, this is an official email to reach me. might change in future
           git config --global user.name "Tilman Gmelin"
 
       - name: Extract target number of commits from seed.txt
@@ -22,6 +22,7 @@ jobs:
         run: |
           NUMBER=$(grep $(date +%F) seed.txt | cut -d' ' -f2)
           echo "TARGET_COMMITS=$NUMBER" >> $GITHUB_ENV
+          echo "Target commits: $NUMBER"
 
       - name: Fetch commits from GitHub activity
         id: fetch_activity
